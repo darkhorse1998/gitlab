@@ -1,0 +1,37 @@
+image: node:lts
+
+stages:
+  - build-website
+  - test
+  - deploy
+
+build webiste:
+  stage: build-website
+  script:
+    - npm install
+    - npm install -g gatsby-cli
+    - gatsby build
+  artifacts:
+    paths:
+      - ./public
+
+test artifact:
+  image: alpine
+  stage: test
+  script:
+    - grep -q "Gatsby" ./public/index.html
+
+test website:
+  stage: test
+  script:
+    - npm install
+    - npm install -g gatsby-cli
+    - gatsby serve &
+    - sleep 5
+    - curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
+
+deploy website:
+  stage: deploy
+  script:
+    - npm install -g surge
+    - surge --project ./public --domain static-website-2024.surge.sh
