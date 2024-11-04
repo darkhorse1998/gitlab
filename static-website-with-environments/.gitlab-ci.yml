@@ -1,0 +1,52 @@
+image: node:lts
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - test-build
+  - deploy-dev
+  - test-dev
+  - deploy-staging
+  - test-staging
+  - deploy-production
+  - test-production
+
+build webiste:
+  stage: build
+  script:
+    - npm install
+    - npm install -g gatsby-cli
+    - gatsby build
+  artifacts:
+    paths:
+      - ./public
+
+test artifact:
+  image: alpine
+  stage: test-build
+  script:
+    - grep -q "Gatsby" ./public/index.html
+
+test website:
+  stage: test-build
+  script:
+    - npm install
+    - npm install -g gatsby-cli
+    - gatsby serve &
+    - sleep 5
+    - curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
+
+deploy website in dev:
+  stage: deploy
+  environment:
+    name: dev
+    url: static-website-2024-dev.surge.sh
+  script:
+    - npm install -g surge
+    - surge --project ./public --domain static-website-2024-dev.surge.sh
+
+test website in dev:
