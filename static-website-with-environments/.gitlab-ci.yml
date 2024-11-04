@@ -20,13 +20,22 @@ stages:
   - deploy-production
   - test-production
 
-.deploy_template:
+.deploy_template: &deploy
   environment:
     name: $ENVIRONMENT
     url: $DOMAIN
   script:
     - npm install -g surge
     - surge --project ./public --domain $DOMAIN
+
+.test_template: &test
+  image: alpine
+  environment:
+    name: $ENVIRONMENT
+    url: $DOMAIN
+  script:
+    - apk add curl
+    - curl http://$DOMAIN | grep -q "Hello"
 
 build webiste:
   stage: build
@@ -54,7 +63,15 @@ test website:
     - curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
 
 deploy website in dev:
-  stage: deploy
+  stage: deploy-dev
+  variables:
+    DOMAIN: $DEV_DOMAIN
+    ENVIRONMENT: dev
   <<: *deploy
 
 test website in dev:
+  stage: test-dev
+  variables:
+    DOMAIN: $DEV_DOMAIN
+    ENVIRONMENT: dev
+  <<: *test
