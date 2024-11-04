@@ -8,7 +8,10 @@ cache:
 variables:
   DEV_DOMAIN: static-website-2024-dev.surge.sh
   STAGING_DOMAIN: static-website-2024-staging.surge.sh
-  PRODUCTION_DOMAIN: static-website-2024-production.surge.sh  
+  PRODUCTION_DOMAIN: static-website-2024.surge.sh
+  DEV_ENV: dev
+  STAGING_ENV: staging
+  PRODUTION_ENV: production
 
 stages:
   - build
@@ -63,15 +66,43 @@ test website:
     - curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
 
 deploy website in dev:
-  stage: deploy-dev
+  stage: deploy-$DEV_DOMAIN
   variables:
     DOMAIN: $DEV_DOMAIN
-    ENVIRONMENT: dev
+    ENVIRONMENT: $DEV_ENV
   <<: *deploy
 
 test website in dev:
-  stage: test-dev
+  stage: test-$DEV_DOMAIN
   variables:
     DOMAIN: $DEV_DOMAIN
-    ENVIRONMENT: dev
+    ENVIRONMENT: $DEV_ENV
+  <<: *test
+
+deploy website in staging:
+  stage: deploy-$STAGING_ENV
+  variables:
+    DOMAIN: $STAGING_DOMAIN
+    ENVIRONMENT: $STAGING_ENV
+  <<: *deploy
+
+test website in staging:
+  stage: test-$STAGING_ENV
+  variables:
+    DOMAIN: $STAGING_DOMAIN
+    ENVIRONMENT: $STAGING_ENV
+  <<: *test
+
+deploy website in production:
+  stage: deploy-$PRODUCTION_ENV
+  variables:
+    DOMAIN: $PRODUCTION_DOMAIN
+    ENVIRONMENT: $PRODUCTION_ENV
+  <<: *deploy
+
+test website in production:
+  stage: test-$PRODUCTION_ENV
+  variables:
+    DOMAIN: $PRODUCTION_DOMAIN
+    ENVIRONMENT: $PRODUCTION_ENV
   <<: *test
