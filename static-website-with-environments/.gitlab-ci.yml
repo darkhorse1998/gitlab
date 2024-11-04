@@ -5,6 +5,11 @@ cache:
   paths:
     - node_modules/
 
+variables:
+  DEV_DOMAIN: static-website-2024-dev.surge.sh
+  STAGING_DOMAIN: static-website-2024-staging.surge.sh
+  PRODUCTION_DOMAIN: static-website-2024-production.surge.sh  
+
 stages:
   - build
   - test-build
@@ -14,6 +19,14 @@ stages:
   - test-staging
   - deploy-production
   - test-production
+
+.deploy_template:
+  environment:
+    name: $ENVIRONMENT
+    url: $DOMAIN
+  script:
+    - npm install -g surge
+    - surge --project ./public --domain $DOMAIN
 
 build webiste:
   stage: build
@@ -42,11 +55,6 @@ test website:
 
 deploy website in dev:
   stage: deploy
-  environment:
-    name: dev
-    url: static-website-2024-dev.surge.sh
-  script:
-    - npm install -g surge
-    - surge --project ./public --domain static-website-2024-dev.surge.sh
+  <<: *deploy
 
 test website in dev:
