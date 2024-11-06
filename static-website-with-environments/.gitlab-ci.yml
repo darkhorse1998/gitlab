@@ -6,12 +6,12 @@ cache:
     - node_modules/
 
 variables:
-  DEV_DOMAIN: static-website-2024-dev.surge.sh
-  STAGING_DOMAIN: static-website-2024-staging.surge.sh
-  PRODUCTION_DOMAIN: static-website-2024.surge.sh
+  DEV_DOMAIN: https://static-website-2024-dev.surge.sh
+  STAGING_DOMAIN: https://static-website-2024-staging.surge.sh
+  PRODUCTION_DOMAIN: https://static-website-2024.surge.sh
   DEV_ENV: dev
   STAGING_ENV: staging
-  PRODUTION_ENV: production
+  PRODUCTION_ENV: production
 
 stages:
   - build
@@ -38,7 +38,7 @@ stages:
     url: $DOMAIN
   script:
     - apk add curl
-    - curl http://$DOMAIN | grep -q "Hello"
+    - curl $DOMAIN | grep -q "Hello"
 
 build webiste:
   stage: build
@@ -66,42 +66,42 @@ test website:
     - curl "http://localhost:9000" | tac | tac | grep -q "Gatsby"
 
 deploy website in dev:
-  stage: deploy-$DEV_DOMAIN
+  stage: deploy-dev
   variables:
     DOMAIN: $DEV_DOMAIN
     ENVIRONMENT: $DEV_ENV
   <<: *deploy
 
 test website in dev:
-  stage: test-$DEV_DOMAIN
+  stage: test-dev
   variables:
     DOMAIN: $DEV_DOMAIN
     ENVIRONMENT: $DEV_ENV
   <<: *test
 
 deploy website in staging:
-  stage: deploy-$STAGING_ENV
+  stage: deploy-staging
   variables:
     DOMAIN: $STAGING_DOMAIN
     ENVIRONMENT: $STAGING_ENV
   <<: *deploy
 
 test website in staging:
-  stage: test-$STAGING_ENV
+  stage: test-staging
   variables:
     DOMAIN: $STAGING_DOMAIN
     ENVIRONMENT: $STAGING_ENV
   <<: *test
 
 deploy website in production:
-  stage: deploy-$PRODUCTION_ENV
+  stage: deploy-production
   variables:
     DOMAIN: $PRODUCTION_DOMAIN
     ENVIRONMENT: $PRODUCTION_ENV
   <<: *deploy
 
 test website in production:
-  stage: test-$PRODUCTION_ENV
+  stage: test-production
   variables:
     DOMAIN: $PRODUCTION_DOMAIN
     ENVIRONMENT: $PRODUCTION_ENV
